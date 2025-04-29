@@ -3,6 +3,7 @@ require_relative "lines"
 KNOWN_PROJECTS = []
 
 TARGET_FILE_NAME = "Directory.Build.targets"
+DEFAULT_SETTING = "enabled"
 
 def is_file_valid?(file_content)
     if file_content.scan(/TreatWarningsAsErrors/).length > 2 then
@@ -12,7 +13,7 @@ def is_file_valid?(file_content)
     return true
 end
 
-def show_current_status(file_content)
+def get_current_status(file_content)
 
     if file_content.include?("<TreatWarningsAsErrors>true</TreatWarningsAsErrors>") then
         return "enabled"
@@ -92,7 +93,7 @@ def main()
     end
 
     if ARGV.length == 0 then
-        current_status = show_current_status(original_file_content)
+        current_status = get_current_status(original_file_content)
         puts "warnings as errors: #{current_status}"
         return
     end
@@ -113,18 +114,13 @@ def main()
 
     write_file(full_file_name, new_file_content)
 
-    changes_file = "#{__dir__}/changes_made_#{project_folder}"
+    current_status = get_current_status(new_file_content)
+    changes_made = current_status != DEFAULT_SETTING
 
-    if File.exist?(changes_file) then
-        set_git_tracking(:on, full_file_name)
-
-        File.delete(changes_file)
-    else
+    if changes_made then
         set_git_tracking(:off, full_file_name)
-
-        File.open(changes_file, 'w') do |f|
-            f.puts "changes made"
-        end
+    else
+        set_git_tracking(:on, full_file_name)
     end
 end
 
