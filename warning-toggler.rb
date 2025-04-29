@@ -113,7 +113,7 @@ def main()
 
     write_file(full_file_name, new_file_content)
 
-    changes_file = "#{__dir__}/changes_made"
+    changes_file = "#{__dir__}/changes_made_#{project_folder}"
 
     if File.exist?(changes_file) then
         set_git_tracking(:on, full_file_name)
