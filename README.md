@@ -1,3 +1,5 @@
+# Warning Toggler
+
 ## Usage:
 
 `warning-toggler`: See the current value of `TreatWarningsAsErrors`
